@@ -199,7 +199,7 @@ async function fetchConvert(from, to, amount){
 
     // montar query string
     const q = Object.keys(params).map(k => `${k}=${params[k]}`).join('&');
-    return `cyclos://runOperation?id=${DEFAULT_OPERATION_ID}&scope=${SCOPE}&${q}`;
+    return `wereldhave://runOperation?id=${DEFAULT_OPERATION_ID}&scope=${SCOPE}&${q}`;
   }
 
   // === TESTE: abrir URL fixa ===
