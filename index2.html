@@ -205,11 +205,11 @@ async function fetchConvert(from, to, amount){
   
   // === TESTE: abrir URL fixa ===
   sendBtn.addEventListener('click', ()=> {
-    window.location.href = 'wereldhave://runOperation?id=cotest2&scope=USER';
+    window.location.href = 'wereldhave://runOperation?id=cotest2&scope=USER&text=hey';
   });
 
   copyBtn.addEventListener('click', ()=> {
-    navigator.clipboard?.writeText('wereldhave://runOperation?id=cotest2&scope=USER').then(()=>alert('Link copiado'));
+    navigator.clipboard?.writeText('wereldhave://runOperation?id=cotest2&scope=USER&text=hey').then(()=>alert('Link copiado'));
   });
 
 })();
