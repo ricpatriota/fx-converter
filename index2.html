@@ -202,13 +202,14 @@ async function fetchConvert(from, to, amount){
     return `wereldhave://runOperation?id=${DEFAULT_OPERATION_ID}&scope=${SCOPE}&${q}`;
   }
 
+  
   // === TESTE: abrir URL fixa ===
   sendBtn.addEventListener('click', ()=> {
-    window.location.href = 'wereldhave://accounts';
+    window.location.href = 'wereldhave://runOperation?id=cotest2&scope=USER';
   });
 
   copyBtn.addEventListener('click', ()=> {
-    navigator.clipboard?.writeText('wereldhave://accounts').then(()=>alert('Link copiado'));
+    navigator.clipboard?.writeText('wereldhave://runOperation?id=cotest2&scope=USER').then(()=>alert('Link copiado'));
   });
 
 })();
