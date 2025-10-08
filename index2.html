@@ -31,41 +31,40 @@
 </head>
 <body>
   <div class="wrap" role="main">
-    <h1>Conversor rápido de moedas</h1>
-    <p class="lead">Digite o valor e veja a conversão em tempo real. Ao confirmar, você será redirecionado para a operação custom no app Cyclos.</p>
+    <h1>Currency converter</h1>
+    <p class="lead">Enter the amount and see the conversion in real time.</p>
 
     <div class="grid">
       <div>
-        <label for="fromCurrency">Moeda origem</label>
+        <label for="fromCurrency">Origin currency</label>
         <select id="fromCurrency"></select>
       </div>
       <div>
-        <label for="toCurrency">Moeda destino</label>
+        <label for="toCurrency">Destiny currency</label>
         <select id="toCurrency"></select>
       </div>
       <div>
-        <label for="amount">Valor origem</label>
+        <label for="amount">Origin amount</label>
         <input id="amount" type="number" min="0" step="0.01" value="100" />
       </div>
       <div>
-        <label for="feePercent">Taxa (%) — opcional</label>
+        <label for="feePercent">Fees (%) — optional</label>
         <input id="feePercent" type="number" min="0" step="0.01" value="0" />
       </div>
     </div>
 
     <div class="result-card" id="resultCard" aria-live="polite">
-      <div class="result-line"><div class="small">Você envia</div><div class="big" id="sendExact">—</div></div>
-      <div class="result-line"><div class="small">Taxas (incluídas)</div><div class="small" id="feesTotal">—</div></div>
-      <div class="result-line"><div class="small">Taxa de câmbio</div><div class="small" id="rateInfo">—</div></div>
+      <div class="result-line"><div class="small">You send</div><div class="big" id="sendExact">—</div></div>
+      <div class="result-line"><div class="small">Fees (included)</div><div class="small" id="feesTotal">—</div></div>
+      <div class="result-line"><div class="small">Exchange rate</div><div class="small" id="rateInfo">—</div></div>
       <div style="height:6px"></div>
-      <div class="result-line"><div class="small">Valor convertido</div><div class="big" id="converted">—</div></div>
+      <div class="result-line"><div class="small">Converted amount</div><div class="big" id="converted">—</div></div>
     </div>
 
     <div class="btns">
-      <button id="sendBtn" class="btn btn-primary">Send money (abrir Cyclos)</button>
-      <button id="copyBtn" class="btn btn-ghost">Copiar link</button>
+      <button id="sendBtn" class="btn btn-primary">Send money (open Cyclos)</button>
+      <button id="copyBtn" class="btn btn-ghost">Copy link</button>
     </div>
-    <div class="note">Obs: API grátis usada: <a href="https://exchangerate.host" target="_blank">exchangerate.host</a>. Se quiser trocar por outra, eu adapto.</div>
   </div>
 
 <script>
