@@ -1,49 +1,168 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Currency Converter</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Currency Conversion</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #f2f8ff;
+    color: #333;
+    padding: 20px;
+  }
+  .container {
+    max-width: 480px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  h2 {
+    color: #0077c8;
+    margin-bottom: 10px;
+  }
+  .recipient {
+    background: #e6f4ff;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-weight: 600;
+    color: #0077c8;
+    margin-bottom: 20px;
+  }
+  .section {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    align-items: center;
+  }
+  .section input, .section select {
+    width: 48%;
+    padding: 10px;
+    font-size: 16px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+  .summary {
+    background: #0077c8;
+    color: white;
+    padding: 16px;
+    border-radius: 14px;
+    margin-top: 25px;
+    line-height: 1.8;
+  }
+  .summary strong {
+    font-weight: 700;
+  }
+  .send-btn {
+    background: #0077c8;
+    color: white;
+    font-size: 16px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    margin-top: 16px;
+    cursor: pointer;
+  }
+</style>
 </head>
 <body>
-  <div class="converter">
-    <div class="recipient">
-      <div class="label">Recipient</div>
-      <div class="recipient-info" id="recipientName">Loading...</div>
+<div class="container">
+  <h2>Currency Conversion</h2>
+
+  <div id="recipient" class="recipient">Recipient: <span id="recipient-name"></span></div>
+
+  <div class="section">
+    <div style="flex:1;">
+      <div>You send</div>
+      <input type="number" id="amountFrom" value="100">
     </div>
-
-    <div class="converter-section">
-      <div class="block">
-        <div class="block-label">You send</div>
-        <div class="block-content">
-          <input type="number" id="amountSend" value="100" />
-          <select id="currencySend">
-            <option value="USD">USD</option>
-            <option value="EUR">EUR</option>
-            <option value="XAF">XAF</option>
-            <option value="CAD">CAD</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="block">
-        <div class="block-label">They receive</div>
-        <div class="block-content">
-          <input type="number" id="amountReceive" readonly />
-          <select id="currencyReceive">
-            <option value="USD">USD</option>
-            <option value="EUR">EUR</option>
-            <option value="XAF">XAF</option>
-            <option value="CAD">CAD</option>
-          </select>
-        </div>
-      </div>
+    <div style="flex:1;">
+      <div>Currency</div>
+      <select id="currencyFrom"></select>
     </div>
-
-    <button id="sendButton">Send Money</button>
   </div>
 
-  <script src="script.js"></script>
+  <div class="section">
+    <div style="flex:1;">
+      <div>They receive</div>
+      <input type="text" id="amountTo" readonly>
+    </div>
+    <div style="flex:1;">
+      <div>Currency</div>
+      <select id="currencyTo"></select>
+    </div>
+  </div>
+
+  <div class="summary" id="summaryBox">
+    <div>You send .................................................... <span id="sumSend">$100 CAD</span></div>
+    <div>Fees (Included) ........................................ <span id="sumFee">$0.00</span></div>
+    <div>Exchange Rate ........................................ <span id="sumRate"></span></div>
+    <div><strong>Amount to pay ................................ <span id="sumTotal">$100 CAD</span></strong></div>
+  </div>
+
+  <button class="send-btn">Send Money</button>
+</div>
+
+<script>
+function getParams() {
+  const params = new URLSearchParams(window.location.search);
+  return {
+    fromUserId: params.get('fromUserId'),
+    toUserId: params.get('toUserId'),
+    toUserName: params.get('toUserName'),
+    fee: parseFloat(params.get('fee')) || 0,
+    rates: params.get('rates') ? JSON.parse(decodeURIComponent(params.get('rates'))) : {}
+  };
+}
+
+const params = getParams();
+
+// Fill recipient name
+document.getElementById('recipient-name').textContent = params.toUserName || '(no recipient)';
+
+// Fill currency selects
+const currencyFrom = document.getElementById('currencyFrom');
+const currencyTo = document.getElementById('currencyTo');
+const allCurrencies = Object.keys(params.rates || {});
+allCurrencies.forEach(cur => {
+  const opt1 = document.createElement('option');
+  const opt2 = document.createElement('option');
+  opt1.value = opt2.value = cur;
+  opt1.textContent = opt2.textContent = cur;
+  currencyFrom.appendChild(opt1);
+  currencyTo.appendChild(opt2);
+});
+if (allCurrencies.length > 1) {
+  currencyFrom.value = allCurrencies[0];
+  currencyTo.value = allCurrencies[1];
+}
+
+// Compute conversion
+function updateConversion() {
+  const from = currencyFrom.value;
+  const to = currencyTo.value;
+  const amount = parseFloat(document.getElementById('amountFrom').value || 0);
+  const rate = params.rates?.[from]?.[to] || 1;
+  const fee = params.fee || 0;
+  const received = amount * rate;
+  const feeAmount = amount * (fee / 100);
+  const total = amount + feeAmount;
+
+  document.getElementById('amountTo').value = received.toFixed(2);
+  document.getElementById('sumSend').textContent = `$${amount.toFixed(2)} ${from}`;
+  document.getElementById('sumFee').textContent = `$${feeAmount.toFixed(2)} (${fee}%)`;
+  document.getElementById('sumRate').textContent = `1 ${from} = ${rate} ${to}`;
+  document.getElementById('sumTotal').textContent = `$${total.toFixed(2)} ${from}`;
+}
+
+document.getElementById('amountFrom').addEventListener('input', updateConversion);
+currencyFrom.addEventListener('change', updateConversion);
+currencyTo.addEventListener('change', updateConversion);
+
+updateConversion();
+</script>
 </body>
 </html>
