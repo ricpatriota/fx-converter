@@ -2,141 +2,48 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Currency Exchange</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #e6f4fb;
-      color: #004466;
-      padding: 30px;
-    }
-    .container {
-      max-width: 520px;
-      margin: 0 auto;
-      background: white;
-      border-radius: 12px;
-      padding: 25px 30px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    .header {
-      background: #0099cc;
-      color: white;
-      padding: 12px 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      font-size: 16px;
-      text-align: center;
-    }
-    .field { margin-bottom: 15px; }
-    .label { font-weight: bold; display: block; margin-bottom: 5px; }
-    input, select {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #cce;
-      border-radius: 6px;
-      font-size: 14px;
-    }
-    .summary {
-      margin-top: 20px;
-      background: #d9f2ff;
-      border-radius: 10px;
-      padding: 15px;
-      font-size: 14px;
-      line-height: 1.5em;
-    }
-    button {
-      background: #0099cc;
-      border: none;
-      color: white;
-      padding: 10px 15px;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      margin-top: 15px;
-      width: 100%;
-    }
-    button:hover {
-      background: #007da3;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Currency Converter</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      Recipient: <span id="recipientName">(unknown)</span>
+  <div class="converter">
+    <div class="recipient">
+      <div class="label">Recipient</div>
+      <div class="recipient-info" id="recipientName">Loading...</div>
     </div>
 
-    <div class="field">
-      <span class="label">Amount to Send:</span>
-      <input id="amount" type="number" value="100" />
+    <div class="converter-section">
+      <div class="block">
+        <div class="block-label">You send</div>
+        <div class="block-content">
+          <input type="number" id="amountSend" value="100" />
+          <select id="currencySend">
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="XAF">XAF</option>
+            <option value="CAD">CAD</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="block-label">They receive</div>
+        <div class="block-content">
+          <input type="number" id="amountReceive" readonly />
+          <select id="currencyReceive">
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="XAF">XAF</option>
+            <option value="CAD">CAD</option>
+          </select>
+        </div>
+      </div>
     </div>
 
-    <div class="field">
-      <span class="label">From Currency:</span>
-      <select id="fromCurrency"></select>
-    </div>
-
-    <div class="field">
-      <span class="label">To Currency:</span>
-      <select id="toCurrency"></select>
-    </div>
-
-    <div class="summary" id="result">Fill values to calculate...</div>
-    <button onclick="convert()">Convert</button>
+    <button id="sendButton">Send Money</button>
   </div>
 
-  <script>
-    // === Parse URL parameters ===
-    function parseParams() {
-      const params = new URLSearchParams(window.location.search);
-      return {
-        fromUserId: params.get("fromUserId"),
-        toUserId: params.get("toUserId"),
-        toUserName: params.get("toUserName"),
-        rates: params.get("rates") ? JSON.parse(decodeURIComponent(params.get("rates"))) : {}
-      };
-    }
-
-    const { fromUserId, toUserId, toUserName, rates } = parseParams();
-
-    // Save IDs internally (useful later if you add "Send via Cyclos" button)
-    window.exchangeContext = { fromUserId, toUserId };
-
-    // === Display recipient name ===
-    document.getElementById("recipientName").innerText = toUserName ? decodeURIComponent(toUserName) : "(unknown)";
-
-    // === Populate currency selectors ===
-    const currencies = Object.keys(rates);
-    const fromSelect = document.getElementById("fromCurrency");
-    const toSelect = document.getElementById("toCurrency");
-
-    currencies.forEach(c => {
-      fromSelect.innerHTML += `<option value="${c}">${c}</option>`;
-      toSelect.innerHTML += `<option value="${c}">${c}</option>`;
-    });
-
-    // === Conversion logic ===
-    function convert() {
-      const amount = parseFloat(document.getElementById("amount").value) || 0;
-      const from = document.getElementById("fromCurrency").value;
-      const to = document.getElementById("toCurrency").value;
-      const rate = rates[from]?.[to];
-
-      const resultDiv = document.getElementById("result");
-
-      if (!rate) {
-        resultDiv.innerHTML = `<b>No rate found</b> for ${from} → ${to}`;
-        return;
-      }
-
-      const converted = amount * rate;
-      resultDiv.innerHTML = `
-        <p><b>Recipient:</b> ${decodeURIComponent(toUserName || "(unknown)")}</p>
-        <p><b>Exchange Rate:</b> 1 ${from} = ${rate} ${to}</p>
-        <p><b>You send:</b> ${amount.toFixed(2)} ${from}</p>
-        <p><b>They receive:</b> ${converted.toFixed(2)} ${to}</p>
-      `;
-    }
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
