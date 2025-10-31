@@ -15,7 +15,7 @@
       margin: 0 auto;
       background: white;
       border-radius: 12px;
-      padding: 20px 30px;
+      padding: 25px 30px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
     .header {
@@ -62,18 +62,8 @@
 </head>
 <body>
   <div class="container">
-    <div class="header" id="recipientHeader">
-      Recipient: <span id="recipientName"></span>
-    </div>
-
-    <div class="field">
-      <span class="label">From User ID:</span>
-      <input id="fromUser" readonly />
-    </div>
-
-    <div class="field">
-      <span class="label">To User ID:</span>
-      <input id="toUser" readonly />
+    <div class="header">
+      Recipient: <span id="recipientName">(unknown)</span>
     </div>
 
     <div class="field">
@@ -96,7 +86,7 @@
   </div>
 
   <script>
-    // === Parse parameters from URL ===
+    // === Parse URL parameters ===
     function parseParams() {
       const params = new URLSearchParams(window.location.search);
       return {
@@ -109,9 +99,10 @@
 
     const { fromUserId, toUserId, toUserName, rates } = parseParams();
 
-    // === Populate initial info ===
-    document.getElementById("fromUser").value = fromUserId || "";
-    document.getElementById("toUser").value = toUserId || "";
+    // Save IDs internally (useful later if you add "Send via Cyclos" button)
+    window.exchangeContext = { fromUserId, toUserId };
+
+    // === Display recipient name ===
     document.getElementById("recipientName").innerText = toUserName ? decodeURIComponent(toUserName) : "(unknown)";
 
     // === Populate currency selectors ===
