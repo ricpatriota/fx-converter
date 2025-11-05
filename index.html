@@ -139,11 +139,15 @@
   </div>
 
   <script>
+    // Lê os parâmetros da URL
     const p = new URLSearchParams(window.location.search);
     const feePercent = parseFloat(p.get('fee') || '0');
     const toUserName = p.get('toUserName') || 'Recipient';
+    const fromUserId = p.get('fromUserId') || '';
+    const toUserId = p.get('toUserId') || '';
     const rates = JSON.parse(decodeURIComponent(p.get('rates') || '{}'));
 
+    // Elementos
     const sendInput = document.getElementById('sendAmount');
     const receiveInput = document.getElementById('receiveAmount');
     const baseSel = document.getElementById('baseCurrency');
@@ -155,6 +159,7 @@
     const rateFooter = document.getElementById('rateFooter');
     toUserEl.textContent = toUserName;
 
+    // Preenche selects com as moedas do JSON
     const currencies = Object.keys(rates);
     currencies.forEach(c => {
       const o1 = document.createElement('option');
@@ -167,9 +172,14 @@
     baseSel.value = currencies[0];
     targetSel.value = currencies[1] || currencies[0];
 
-    const getRate = (base, target) => rates[base]?.[target] || 1;
+    // Função para pegar rate entre base e target
+    const getRate = (base, target) => {
+      if (!rates[base]) return 1;
+      return parseFloat(rates[base][target] || 1);
+    };
     const fmt = (n, c) => `${n.toFixed(2)} ${c}`;
 
+    // Atualiza quando o usuário digita "You send"
     function updateFromSend() {
       const base = baseSel.value, target = targetSel.value;
       const rate = getRate(base, target);
@@ -184,6 +194,7 @@
       rateFooter.textContent = `Base: ${base} • Target: ${target}`;
     }
 
+    // Atualiza quando o usuário digita "They receive"
     function updateFromReceive() {
       const base = baseSel.value, target = targetSel.value;
       const rate = getRate(base, target);
@@ -198,6 +209,7 @@
       rateFooter.textContent = `Base: ${base} • Target: ${target}`;
     }
 
+    // Eventos
     sendInput.addEventListener('input', updateFromSend);
     receiveInput.addEventListener('input', updateFromReceive);
     baseSel.addEventListener('change', updateFromSend);
