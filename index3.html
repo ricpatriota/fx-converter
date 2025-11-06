@@ -246,22 +246,22 @@
       const payoutOption = payoutSel.value;
 
       const params = new URLSearchParams({
-        id: '-8469591684630307395',
-        scope: 'INTERNAL'//,
-       //fromCurrency: base,
-       // transferAmount: amount.toFixed(2),
-       // recipientUser: toUserId,
-       // toCurrencyCode: target,
-       // convertedMoney: received.toFixed(2),
-       // fees: `${feeValue.toFixed(2)} ${base}`,
-       // rate: `1 ${base} = ${rate.toFixed(4)} ${target}`,
-       // payoutOption: payoutOption,
-       // totalSent: total.toFixed(2)
+        id: '-8469591684630307411',
+        scope: 'USER',
+        fromCurrency: base,
+        transferAmount: amount.toFixed(2),
+        recipientUser: toUserId,
+        toCurrencyCode: target,
+        convertedMoney: received.toFixed(2),
+        fees: `${feeValue.toFixed(2)} ${base}`,
+        rate: `1 ${base} = ${rate.toFixed(4)} ${target}`,
+        payoutOption: payoutOption,
+        totalSent: total.toFixed(2)
       });
 
       //const url = `cyclos://runOperation?${params.toString()}`;
       //const url = `cyclos://runOperation?id=-8469591684630307395&scope=INTERNAL`;
-      const url = `cyclos://runOperation?id=-8469591684630307411&scope=USER`;
+      //const url = `cyclos://runOperation?id=-8469591684630307411&scope=USER`;
         
       window.location.href = url;
     });
