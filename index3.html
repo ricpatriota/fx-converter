@@ -158,13 +158,26 @@
       <div class="label">Amount to pay</div>
       <div class="value" id="totalAmount">–</div>
     </div>
-<!-- Description Field -->
-<div style="margin:14px 0;">
-  <input id="descriptionInput" 
-         type="text" 
-         placeholder="Enter description..." 
-         style="width:100%;max-width:500px;padding:10px;border:1px solid #ccc;border-radius:8px;font-size:14px;">
-</div>    
+    
+  <!-- Description Field -->
+    <!--
+  <div style="margin:14px 0;">
+    <input id="descriptionInput" 
+           type="text" 
+           placeholder="Enter description..." 
+           style="width:100%;max-width:500px;padding:10px;border:1px solid #ccc;border-radius:8px;font-size:14px;">
+  </div>    -->
+
+    <div style="margin:14px 0; text-align:left;">
+      <label for="descriptionInput" style="display:block; font-weight:600; color:#333; margin-bottom:6px;">
+        Description
+      </label>
+      <input id="descriptionInput" 
+             type="text" 
+             placeholder="Enter description..." 
+             style="width:100%;max-width:500px;padding:10px;border:1px solid #ccc;border-radius:8px;font-size:14px;">
+    </div>
+    
 
     <div class="recipient">
       Recipient: <strong id="toUserName">–</strong>
