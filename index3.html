@@ -8,13 +8,13 @@
     :root {
       --primary: #e82d7a;
       --secondary: #531059;
-      --light: #faf7fb;
+      --light: #faf9fb;
       --text: #ffffff;
-      --text-dark: #222;
+      --neutral: #f0f0f0;
     }
     body {
       font-family: 'Inter', Arial, sans-serif;
-      background: linear-gradient(135deg, var(--secondary), var(--primary));
+      background-color: var(--light);
       margin: 0;
       padding: 0;
       display: flex;
@@ -23,23 +23,20 @@
       min-height: 100vh;
     }
     .card {
-      background-color: rgba(255, 255, 255, 0.12);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
       border-radius: 28px;
       color: var(--text);
       width: 94%;
       max-width: 420px;
       margin-top: 30px;
-      padding: 28px 22px 36px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 28px 22px 40px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
     }
     .header {
       text-align: center;
       font-size: 20px;
       font-weight: 600;
-      margin-bottom: 20px;
-      color: #fff;
+      margin-bottom: 22px;
     }
     .row {
       display: flex;
@@ -51,7 +48,7 @@
     .row:last-child { border-bottom: none; }
     .label {
       font-size: 15px;
-      opacity: 0.9;
+      opacity: 0.95;
     }
     .value {
       display: flex;
@@ -89,12 +86,38 @@
     }
     .rate-info {
       text-align: center;
-      margin-top: 20px;
+      margin-top: 18px;
       font-size: 14px;
-      opacity: 0.8;
+      opacity: 0.85;
+    }
+    .payout-section {
+      margin-top: 25px;
+      text-align: center;
+    }
+    .payout-section select {
+      width: 80%;
+      background-color: rgba(255,255,255,0.2);
+    }
+    .send-btn {
+      margin-top: 28px;
+      background-color: #fff;
+      color: var(--secondary);
+      font-weight: 700;
+      font-size: 16px;
+      border: none;
+      border-radius: 12px;
+      width: 100%;
+      padding: 12px 0;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: all 0.2s ease-in-out;
+    }
+    .send-btn:hover {
+      background-color: var(--neutral);
+      transform: scale(1.02);
     }
     @media (min-width: 600px) {
-      .card { max-width: 520px; padding: 32px; }
+      .card { max-width: 520px; padding: 34px; }
       input { font-size: 20px; }
       .label { font-size: 16px; }
       select { font-size: 16px; }
@@ -108,7 +131,7 @@
     <div class="row">
       <div class="label">You send</div>
       <div class="value">
-        <input id="sendAmount" type="number" value="0" step="0.01">
+        <input id="sendAmount" type="number" value="100" step="0.01">
         <select id="baseCurrency"></select>
       </div>
     </div>
@@ -140,11 +163,22 @@
       Recipient: <strong id="toUserName">–</strong>
     </div>
 
+    <div class="payout-section">
+      <label for="payoutOption">Payout option:</label><br>
+      <select id="payoutOption">
+        <option value="pv_banktransfer">Bank transfer</option>
+        <option value="pv_mobilemoney">Mobile money</option>
+        <option value="pv_cashpickup">Cash pickup</option>
+      </select>
+    </div>
+
+    <button class="send-btn" id="sendBtn">Send with Cyclos 🚀</button>
+
     <div class="rate-info" id="rateFooter"></div>
   </div>
 
   <script>
-    // Lê os parâmetros da URL
+    // === Read URL params ===
     const p = new URLSearchParams(window.location.search);
     const feePercent = parseFloat(p.get('fee') || '0');
     const toUserName = p.get('toUserName') || 'Recipient';
@@ -152,7 +186,7 @@
     const toUserId = p.get('toUserId') || '';
     const rates = JSON.parse(decodeURIComponent(p.get('rates') || '{}'));
 
-    // Elementos
+    // === Elements ===
     const sendInput = document.getElementById('sendAmount');
     const receiveInput = document.getElementById('receiveAmount');
     const baseSel = document.getElementById('baseCurrency');
@@ -162,9 +196,12 @@
     const totalEl = document.getElementById('totalAmount');
     const toUserEl = document.getElementById('toUserName');
     const rateFooter = document.getElementById('rateFooter');
+    const sendBtn = document.getElementById('sendBtn');
+    const payoutSel = document.getElementById('payoutOption');
+
     toUserEl.textContent = toUserName;
 
-    // Preenche selects com as moedas do JSON
+    // === Fill selects ===
     const currencies = Object.keys(rates);
     currencies.forEach(c => {
       const o1 = document.createElement('option');
@@ -177,14 +214,12 @@
     baseSel.value = currencies[0];
     targetSel.value = currencies[1] || currencies[0];
 
-    // Função para pegar rate entre base e target
     const getRate = (base, target) => {
       if (!rates[base]) return 1;
       return parseFloat(rates[base][target] || 1);
     };
     const fmt = (n, c) => `${n.toFixed(2)} ${c}`;
 
-    // Atualiza quando o usuário digita "You send"
     function updateFromSend() {
       const base = baseSel.value, target = targetSel.value;
       const rate = getRate(base, target);
@@ -193,13 +228,12 @@
       const total = amount + feeValue;
       const received = amount * rate;
       receiveInput.value = received.toFixed(2);
-      rateEl.textContent = `1 ${base} = ${rate.toFixed(3)} ${target}`;
+      rateEl.textContent = `1 ${base} = ${rate.toFixed(4)} ${target}`;
       feesEl.textContent = fmt(feeValue, base) + ` (${feePercent.toFixed(2)}%)`;
       totalEl.textContent = fmt(total, base);
       rateFooter.textContent = `Base: ${base} • Target: ${target}`;
     }
 
-    // Atualiza quando o usuário digita "They receive"
     function updateFromReceive() {
       const base = baseSel.value, target = targetSel.value;
       const rate = getRate(base, target);
@@ -208,18 +242,49 @@
       const feeValue = send * (feePercent / 100);
       const total = send + feeValue;
       sendInput.value = send.toFixed(2);
-      rateEl.textContent = `1 ${base} = ${rate.toFixed(3)} ${target}`;
+      rateEl.textContent = `1 ${base} = ${rate.toFixed(4)} ${target}`;
       feesEl.textContent = fmt(feeValue, base) + ` (${feePercent.toFixed(2)}%)`;
       totalEl.textContent = fmt(total, base);
       rateFooter.textContent = `Base: ${base} • Target: ${target}`;
     }
 
-    // Eventos
     sendInput.addEventListener('input', updateFromSend);
     receiveInput.addEventListener('input', updateFromReceive);
     baseSel.addEventListener('change', updateFromSend);
     targetSel.addEventListener('change', updateFromSend);
     updateFromSend();
+
+    // === Send button ===
+    sendBtn.addEventListener('click', () => {
+      const base = baseSel.value;
+      const target = targetSel.value;
+      const amount = parseFloat(sendInput.value || 0);
+      const received = parseFloat(receiveInput.value || 0);
+      const rate = getRate(base, target);
+      const feeValue = amount * (feePercent / 100);
+      const total = amount + feeValue;
+      const payoutOption = payoutSel.value;
+
+      const params = new URLSearchParams({
+        internalName: 'sendmoneyconfirmation_new',
+        scope: 'INTERNAL',
+        fromCurrency: base,
+        transferAmount: amount.toFixed(2),
+        recipientUser: toUserId,
+        toCurrencyCode: target,
+        convertedMoney: received.toFixed(2),
+        fees: `${feeValue.toFixed(2)} ${base}`,
+        rate: `1 ${base} = ${rate.toFixed(4)} ${target}`,
+        payoutOption: payoutOption,
+        totalSent: total.toFixed(2)
+      });
+
+      const url = `cyclos://runOperation?${params.toString()}`;
+      window.location.href = url;
+
+      // Fecha a aba após 1s
+      setTimeout(() => window.close(), 1000);
+    });
   </script>
 </body>
 </html>
