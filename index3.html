@@ -205,6 +205,7 @@
     const rateFooter = document.getElementById('rateFooter');
     const sendBtn = document.getElementById('sendBtn');
     const payoutSel = document.getElementById('payoutOption');
+    const descEl = document.getElementById('description');
 
     toUserEl.textContent = toUserName;
 
@@ -283,7 +284,8 @@
         fees: `${feeValue.toFixed(2)} ${base}`,
         rate: `1 ${base} = ${rate.toFixed(4)} ${target}`,
         payoutOption: payoutOption,
-        totalSent: total.toFixed(2)
+        totalSent: total.toFixed(2),
+        description: descEl.value || ``
       });
 
       const url = `cyclos://runOperation?${params.toString()}`;
