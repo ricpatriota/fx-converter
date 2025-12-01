@@ -12,8 +12,6 @@
       --text: #ffffff;
       --neutral: #f0f0f0;
     }
-
-    /* === SEU CSS ORIGINAL 100% PRESERVADO === */
     body {
       font-family: 'Inter', Arial, sans-serif;
       background-color: var(--light);
@@ -67,6 +65,8 @@
       outline: none;
       color: var(--text);
     }
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     select {
       background-color: rgba(255,255,255,0.25);
       border: none;
@@ -117,56 +117,63 @@
       transform: scale(1.02);
     }
 
-    @media (min-width: 600px) {
-      .card { max-width: 520px; padding: 34px; }
-      input { font-size: 20px; }
-      .label { font-size: 16px; }
-      select { font-size: 16px; }
-    }
-
-    /* === MODAL FLEXY STYLE — MESMA IDENTIDADE VISUAL === */
+    /* === MODAL === */
     .modal-overlay {
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
+      inset: 0;
       background: rgba(0,0,0,0.55);
       display: none;
       justify-content: center;
       align-items: center;
-      z-index: 999;
+      z-index: 99;
     }
-
     .modal {
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: var(--text);
-      border-radius: 26px;
-      padding: 28px;
-      width: 90%;
-      max-width: 420px;
-      box-shadow: 0 6px 22px rgba(0,0,0,0.25);
-      animation: fadeIn 0.25s ease-out;
+      background: white;
+      width: 82%;
+      max-width: 360px;
+      padding: 22px;
+      border-radius: 18px;
+      text-align: center;
+      color: #333;
+      font-family: 'Inter', sans-serif;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
     }
-
-    .modal-close {
-      float: right;
-      font-size: 22px;
-      font-weight: bold;
+    .modal h3 {
+      margin: 0 0 12px;
+      font-size: 18px;
+      font-weight: 700;
+      color: #531059;
+    }
+    .modal p {
+      font-size: 15px;
+      margin: 0 0 20px;
+    }
+    .modal-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .modal-btn {
+      flex: 1;
+      padding: 10px 0;
+      border-radius: 10px;
+      border: none;
+      font-size: 15px;
+      font-weight: 600;
       cursor: pointer;
-      opacity: 0.8;
+    }
+    .yes-btn {
+      background: #e82d7a;
+      color: white;
+    }
+    .no-btn {
+      background: #ccc;
+      color: black;
     }
 
-    .modal-close:hover {
-      opacity: 1;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.92); }
-      to   { opacity: 1; transform: scale(1); }
-    }
   </style>
 </head>
 <body>
-
-  <!-- ======= SEU CARD ORIGINAL (INALTERADO) ======= -->
   <div class="card">
     <div class="header">💱 Quick Converter</div>
 
@@ -205,7 +212,9 @@
       <label for="descriptionInput" style="display:block; font-weight:600; color:white; margin-bottom:6px;">
         Description
       </label>
-      <input id="descriptionInput" type="text" placeholder="Enter description..." 
+      <input id="descriptionInput" 
+             type="text" 
+             placeholder="Enter description..." 
              style="width:100%;max-width:500px;padding:10px;border:1px solid #ccc;border-radius:8px;font-size:14px;text-align:left;">
     </div>
 
@@ -225,31 +234,22 @@
     <button class="send-btn" id="sendBtn">Return to FlexyApp</button>
 
     <div class="rate-info" id="rateFooter"></div>
-
-    <!-- Botão extra para abrir o modal -->
-    <button class="send-btn" style="margin-top:18px;background:#fff;color:var(--primary)"
-            onclick="openModal()">Open Extra Modal</button>
   </div>
 
-  <!-- ===== MODAL FLEXY ===== -->
+  <!-- === MODAL HTML === -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
-      <span class="modal-close" onclick="closeModal()">×</span>
-      <h2 style="margin-top:0;">🔍 Extra Information</h2>
-
-      <p style="font-size:15px;opacity:0.9;">
-        This modal follows exactly the same color scheme, rounded corners, gradient and shadows
-        as your main converter card.
-      </p>
-
-      <button class="send-btn" onclick="closeModal()">Close</button>
+      <h3>Confirm Payment</h3>
+      <p>Do you want to send this payment?</p>
+      <div class="modal-buttons">
+        <button class="modal-btn yes-btn" id="yesBtn">Yes</button>
+        <button class="modal-btn no-btn" id="noBtn">No</button>
+      </div>
     </div>
   </div>
 
-
-  <!-- === SEU SCRIPT ORIGINAL + funções novas isoladas === -->
   <script>
-    /* ==== SEU SCRIPT ORIGINAL 100% PRESERVADO ==== */
+    // === Read URL params ===
     const p = new URLSearchParams(window.location.search);
     const feePercent = parseFloat(p.get('fee') || '0');
     const toUserName = p.get('toUserName') || 'Recipient';
@@ -257,6 +257,7 @@
     const toUserId = p.get('toUserId') || '';
     const rates = JSON.parse(decodeURIComponent(p.get('rates') || '{}'));
 
+    // === Elements ===
     const sendInput = document.getElementById('sendAmount');
     const receiveInput = document.getElementById('receiveAmount');
     const baseSel = document.getElementById('baseCurrency');
@@ -270,8 +271,13 @@
     const payoutSel = document.getElementById('payoutOption');
     const descEl = document.getElementById('descriptionInput');
 
+    const modalOverlay = document.getElementById("modalOverlay");
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+
     toUserEl.textContent = toUserName;
 
+    // === Fill selects ===
     const currencies = Object.keys(rates);
     currencies.forEach(c => {
       const o1 = document.createElement('option');
@@ -324,7 +330,18 @@
     targetSel.addEventListener('change', updateFromSend);
     updateFromSend();
 
-    sendBtn.addEventListener('click', () => {
+    // === SHOW MODAL ===
+    sendBtn.addEventListener("click", () => {
+      modalOverlay.style.display = "flex";
+    });
+
+    // === CLOSE MODAL ===
+    noBtn.addEventListener("click", () => {
+      modalOverlay.style.display = "none";
+    });
+
+    // === YES → EXECUTE ORIGINAL PAYMENT LOGIC ===
+    yesBtn.addEventListener("click", () => {
       const base = baseSel.value;
       const target = targetSel.value;
       const amount = parseFloat(sendInput.value || 0);
@@ -355,15 +372,6 @@
 
       setTimeout(() => window.close(), 1000);
     });
-
-    /* === FUNÇÕES DO MODAL (ISOLADAS, NÃO AFETAM NADA) === */
-    function openModal() {
-      document.getElementById('modalOverlay').style.display = 'flex';
-    }
-
-    function closeModal() {
-      document.getElementById('modalOverlay').style.display = 'none';
-    }
   </script>
 </body>
 </html>
