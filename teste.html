@@ -116,61 +116,49 @@
       background-color: var(--neutral);
       transform: scale(1.02);
     }
-
-    /* === MODAL === */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.55);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 99;
-    }
-    .modal {
-      background: white;
-      width: 82%;
-      max-width: 360px;
-      padding: 22px;
-      border-radius: 18px;
-      text-align: center;
-      color: #333;
-      font-family: 'Inter', sans-serif;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-    }
-    .modal h3 {
-      margin: 0 0 12px;
-      font-size: 18px;
-      font-weight: 700;
-      color: #531059;
-    }
-    .modal p {
-      font-size: 15px;
-      margin: 0 0 20px;
-    }
-    .modal-buttons {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-    }
-    .modal-btn {
-      flex: 1;
-      padding: 10px 0;
-      border-radius: 10px;
-      border: none;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .yes-btn {
-      background: #e82d7a;
-      color: white;
-    }
-    .no-btn {
-      background: #ccc;
-      color: black;
+    @media (min-width: 600px) {
+      .card { max-width: 520px; padding: 34px; }
+      input { font-size: 20px; }
+      .label { font-size: 16px; }
+      select { font-size: 16px; }
     }
 
+/* === MODAL (merge com visual Flexy) === */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+.modal-card {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: var(--text);
+  width: 90%;
+  max-width: 420px;
+  border-radius: 22px;
+  padding: 20px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.28);
+  font-family: 'Inter', Arial, sans-serif;
+}
+.modal-title { font-size: 18px; font-weight: 700; margin: 0 0 8px; }
+.modal-text  { font-size: 15px; opacity: 0.95; margin: 0 0 18px; }
+.modal-actions { display:flex; gap:12px; }
+.modal-btn {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: none;
+  font-weight:700;
+  cursor: pointer;
+}
+.modal-yes { background: #fff; color: var(--secondary); } /* white btn like your send */
+.modal-no  { background: rgba(255,255,255,0.2); color: var(--text); }
+
+
+    
   </style>
 </head>
 <body>
@@ -207,6 +195,15 @@
       <div class="label">Amount to pay</div>
       <div class="value" id="totalAmount">–</div>
     </div>
+    
+  <!-- Description Field -->
+    <!--
+  <div style="margin:14px 0;">
+    <input id="descriptionInput" 
+           type="text" 
+           placeholder="Enter description..." 
+           style="width:100%;max-width:500px;padding:10px;border:1px solid #ccc;border-radius:8px;font-size:14px;">
+  </div>    -->
 
     <div style="margin:14px 0; text-align:left;">
       <label for="descriptionInput" style="display:block; font-weight:600; color:white; margin-bottom:6px;">
@@ -217,6 +214,7 @@
              placeholder="Enter description..." 
              style="width:100%;max-width:500px;padding:10px;border:1px solid #ccc;border-radius:8px;font-size:14px;text-align:left;">
     </div>
+    
 
     <div class="recipient">
       Recipient: <strong id="toUserName">–</strong>
@@ -234,18 +232,6 @@
     <button class="send-btn" id="sendBtn">Return to FlexyApp</button>
 
     <div class="rate-info" id="rateFooter"></div>
-  </div>
-
-  <!-- === MODAL HTML === -->
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal">
-      <h3>Confirm Payment</h3>
-      <p>Do you want to send this payment?</p>
-      <div class="modal-buttons">
-        <button class="modal-btn yes-btn" id="yesBtn">Yes</button>
-        <button class="modal-btn no-btn" id="noBtn">No</button>
-      </div>
-    </div>
   </div>
 
   <script>
@@ -270,10 +256,6 @@
     const sendBtn = document.getElementById('sendBtn');
     const payoutSel = document.getElementById('payoutOption');
     const descEl = document.getElementById('descriptionInput');
-
-    const modalOverlay = document.getElementById("modalOverlay");
-    const yesBtn = document.getElementById("yesBtn");
-    const noBtn = document.getElementById("noBtn");
 
     toUserEl.textContent = toUserName;
 
@@ -330,18 +312,8 @@
     targetSel.addEventListener('change', updateFromSend);
     updateFromSend();
 
-    // === SHOW MODAL ===
-    sendBtn.addEventListener("click", () => {
-      modalOverlay.style.display = "flex";
-    });
-
-    // === CLOSE MODAL ===
-    noBtn.addEventListener("click", () => {
-      modalOverlay.style.display = "none";
-    });
-
-    // === YES → EXECUTE ORIGINAL PAYMENT LOGIC ===
-    yesBtn.addEventListener("click", () => {
+    // === Send button ===
+    sendBtn.addEventListener('click', () => {
       const base = baseSel.value;
       const target = targetSel.value;
       const amount = parseFloat(sendInput.value || 0);
@@ -370,6 +342,7 @@
       const url = `cyclos://runOperation?${params.toString()}`;
       window.location.href = url;
 
+      // Fecha a aba após 1s
       setTimeout(() => window.close(), 1000);
     });
   </script>
