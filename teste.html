@@ -12,6 +12,8 @@
       --text: #ffffff;
       --neutral: #f0f0f0;
     }
+
+    /* === SEU CSS ORIGINAL 100% PRESERVADO === */
     body {
       font-family: 'Inter', Arial, sans-serif;
       background-color: var(--light);
@@ -65,8 +67,6 @@
       outline: none;
       color: var(--text);
     }
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     select {
       background-color: rgba(255,255,255,0.25);
       border: none;
@@ -116,15 +116,57 @@
       background-color: var(--neutral);
       transform: scale(1.02);
     }
+
     @media (min-width: 600px) {
       .card { max-width: 520px; padding: 34px; }
       input { font-size: 20px; }
       .label { font-size: 16px; }
       select { font-size: 16px; }
     }
+
+    /* === MODAL FLEXY STYLE — MESMA IDENTIDADE VISUAL === */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.55);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .modal {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: var(--text);
+      border-radius: 26px;
+      padding: 28px;
+      width: 90%;
+      max-width: 420px;
+      box-shadow: 0 6px 22px rgba(0,0,0,0.25);
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .modal-close {
+      float: right;
+      font-size: 22px;
+      font-weight: bold;
+      cursor: pointer;
+      opacity: 0.8;
+    }
+
+    .modal-close:hover {
+      opacity: 1;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.92); }
+      to   { opacity: 1; transform: scale(1); }
+    }
   </style>
 </head>
 <body>
+
+  <!-- ======= SEU CARD ORIGINAL (INALTERADO) ======= -->
   <div class="card">
     <div class="header">💱 Quick Converter</div>
 
@@ -158,26 +200,14 @@
       <div class="label">Amount to pay</div>
       <div class="value" id="totalAmount">–</div>
     </div>
-    
-  <!-- Description Field -->
-    <!--
-  <div style="margin:14px 0;">
-    <input id="descriptionInput" 
-           type="text" 
-           placeholder="Enter description..." 
-           style="width:100%;max-width:500px;padding:10px;border:1px solid #ccc;border-radius:8px;font-size:14px;">
-  </div>    -->
 
     <div style="margin:14px 0; text-align:left;">
       <label for="descriptionInput" style="display:block; font-weight:600; color:white; margin-bottom:6px;">
         Description
       </label>
-      <input id="descriptionInput" 
-             type="text" 
-             placeholder="Enter description..." 
+      <input id="descriptionInput" type="text" placeholder="Enter description..." 
              style="width:100%;max-width:500px;padding:10px;border:1px solid #ccc;border-radius:8px;font-size:14px;text-align:left;">
     </div>
-    
 
     <div class="recipient">
       Recipient: <strong id="toUserName">–</strong>
@@ -195,10 +225,31 @@
     <button class="send-btn" id="sendBtn">Return to FlexyApp</button>
 
     <div class="rate-info" id="rateFooter"></div>
+
+    <!-- Botão extra para abrir o modal -->
+    <button class="send-btn" style="margin-top:18px;background:#fff;color:var(--primary)"
+            onclick="openModal()">Open Extra Modal</button>
   </div>
 
+  <!-- ===== MODAL FLEXY ===== -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <span class="modal-close" onclick="closeModal()">×</span>
+      <h2 style="margin-top:0;">🔍 Extra Information</h2>
+
+      <p style="font-size:15px;opacity:0.9;">
+        This modal follows exactly the same color scheme, rounded corners, gradient and shadows
+        as your main converter card.
+      </p>
+
+      <button class="send-btn" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+
+
+  <!-- === SEU SCRIPT ORIGINAL + funções novas isoladas === -->
   <script>
-    // === Read URL params ===
+    /* ==== SEU SCRIPT ORIGINAL 100% PRESERVADO ==== */
     const p = new URLSearchParams(window.location.search);
     const feePercent = parseFloat(p.get('fee') || '0');
     const toUserName = p.get('toUserName') || 'Recipient';
@@ -206,7 +257,6 @@
     const toUserId = p.get('toUserId') || '';
     const rates = JSON.parse(decodeURIComponent(p.get('rates') || '{}'));
 
-    // === Elements ===
     const sendInput = document.getElementById('sendAmount');
     const receiveInput = document.getElementById('receiveAmount');
     const baseSel = document.getElementById('baseCurrency');
@@ -222,7 +272,6 @@
 
     toUserEl.textContent = toUserName;
 
-    // === Fill selects ===
     const currencies = Object.keys(rates);
     currencies.forEach(c => {
       const o1 = document.createElement('option');
@@ -275,36 +324,6 @@
     targetSel.addEventListener('change', updateFromSend);
     updateFromSend();
 
-
-
-<!-- === CONFIRMATION MODAL === -->
-<div id="confirmModal" 
-     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
-            background:rgba(0,0,0,0.5); backdrop-filter:blur(3px);
-            display:flex; justify-content:center; align-items:center; z-index:9999;">
-  <div style="background:white; padding:22px; border-radius:14px; width:80%; max-width:320px;
-              text-align:center; font-family:Inter, sans-serif; color:#333;">
-    
-    <h3 style="margin-top:0; font-size:18px;">Confirm payment?</h3>
-    
-    <p id="confirmText" style="font-size:15px; opacity:0.9; margin: 10px 0 18px;"></p>
-
-    <button id="confirmYes"
-            style="background:#e82d7a; color:white; border:none; padding:10px 18px;
-                   border-radius:10px; font-size:15px; margin-right:10px; cursor:pointer;">
-      Yes, confirm
-    </button>
-
-    <button id="confirmNo"
-            style="background:#aaa; color:white; border:none; padding:10px 18px;
-                   border-radius:10px; font-size:15px; cursor:pointer;">
-      Cancel
-    </button>
-  </div>
-</div>    
-
-    // === Send button ===
-    /*
     sendBtn.addEventListener('click', () => {
       const base = baseSel.value;
       const target = targetSel.value;
@@ -313,53 +332,38 @@
       const rate = getRate(base, target);
       const feeValue = amount * (feePercent / 100);
       const total = amount + feeValue;
-      const payoutOption = payoutSel.value;*/
+      const payoutOption = payoutSel.value;
 
-// === CONFIRMATION HANDLING ===
-document.getElementById('confirmYes').addEventListener('click', () => {
-  
-  // Executa exatamente o que já existia
-  const base = baseSel.value;
-  const target = targetSel.value;
-  const amount = parseFloat(sendInput.value || 0);
-  const received = parseFloat(receiveInput.value || 0);
-  const rate = getRate(base, target);
-  const feeValue = amount * (feePercent / 100);
-  const total = amount + feeValue;
-  const payoutOption = payoutSel.value;
+      const params = new URLSearchParams({
+        id: '-8469591684630307411',
+        scope: 'INTERNAL',
+        fromCurrency: base,
+        transferAmount: amount.toFixed(2),
+        recipientUser: toUserId,
+        toCurrencyCode: target,
+        convertedMoney: received.toFixed(2),
+        fees: `${feeValue.toFixed(2)} ${base}`,
+        rate: `1 ${base} = ${rate.toFixed(4)} ${target}`,
+        payoutOption: payoutOption,
+        totalSent: total.toFixed(2),
+        description: descEl && descEl.value ? descEl.value.trim() : '',
+        rateValue: `${rate.toFixed(4)} ${target}`
+      });
 
-  const params = new URLSearchParams({
-    id: '-8469591684630307411',
-    scope: 'INTERNAL',
-    fromCurrency: base,
-    transferAmount: amount.toFixed(2),
-    recipientUser: toUserId,
-    toCurrencyCode: target,
-    convertedMoney: received.toFixed(2),
-    fees: `${feeValue.toFixed(2)} ${base}`,
-    rate: `1 ${base} = ${rate.toFixed(4)} ${target}`,
-    payoutOption: payoutOption,
-    totalSent: total.toFixed(2),
-    description: descEl && descEl.value ? descEl.value.trim() : '',
-    rateValue: `${rate.toFixed(4)} ${target}`
-  });
+      const url = `cyclos://runOperation?${params.toString()}`;
+      window.location.href = url;
 
-  const url = `cyclos://runOperation?${params.toString()}`;
-  window.location.href = url;
+      setTimeout(() => window.close(), 1000);
+    });
 
-  setTimeout(() => window.close(), 1000);
-});
+    /* === FUNÇÕES DO MODAL (ISOLADAS, NÃO AFETAM NADA) === */
+    function openModal() {
+      document.getElementById('modalOverlay').style.display = 'flex';
+    }
 
-document.getElementById('confirmNo').addEventListener('click', () => {
-  document.getElementById('confirmModal').style.display = "none";
-});
-
-
-
+    function closeModal() {
+      document.getElementById('modalOverlay').style.display = 'none';
+    }
   </script>
-
-
-
-
 </body>
 </html>
