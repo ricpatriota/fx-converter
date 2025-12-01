@@ -235,7 +235,7 @@
   </div>
 
 
-  <!-- CONFIRMATION MODAL (cole aqui, antes do <script>) -->
+  <!-- CONFIRMATION MODAL -->
 <div id="modalOverlay" class="modal-overlay" aria-hidden="true">
   <div class="modal-card" role="dialog" aria-modal="true">
     <div class="modal-title">Confirm Payment</div>
@@ -327,7 +327,7 @@
     updateFromSend();
 
 // === Send button ===
-// agora abre o modal para confirmação; ao confirmar (Yes) executa a lógica original
+// agora abre o modal para confirmação; ao confirmar (Yes) executa a lógica 
 sendBtn.addEventListener('click', () => {
   const base = baseSel.value;
   const amount = parseFloat(sendInput.value || 0);
@@ -371,10 +371,10 @@ document.getElementById('modalYes').addEventListener('click', () => {
   const url = `cyclos://runOperation?${params.toString()}`;
   window.location.href = url;
 
-  // fecha modal (opcional)
+  // fecha modal 
   document.getElementById('modalOverlay').style.display = 'none';
 
-  // Fecha a aba após 1s (mantendo sua lógica)
+  // Fecha a aba após 1s 
   setTimeout(() => window.close(), 1000);
 });
 
