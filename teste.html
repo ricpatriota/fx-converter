@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Currency Converter</title>
+  <style>
+    :root {
+      --primary: #e82d7a;
+      --secondary: #531059;
+      --light: #faf9fb;
+      --text: #ffffff;
+      --neutral: #f0f0f0;
+    }
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      background-color: var(--light);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+    .card {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 28px;
+      color: var(--text);
+      width: 94%;
+      max-width: 420px;
+      margin-top: 30px;
+      padding: 28px 22px 40px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+    .header {
+      text-align: center;
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 22px;
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px dotted rgba(255,255,255,0.3);
+    }
+    .row:last-child { border-bottom: none; }
+    .label {
+      font-size: 15px;
+      opacity: 0.95;
+    }
+    .value {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    input {
+      width: 110px;
+      font-size: 18px;
+      font-weight: 600;
+      text-align: right;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+    }
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    select {
+      background-color: rgba(255,255,255,0.25);
+      border: none;
+      color: var(--text);
+      border-radius: 8px;
+      font-size: 15px;
+      padding: 6px 10px;
+      outline: none;
+    }
+    option { color: black; }
+    .bold { font-weight: 700; }
+    .recipient {
+      text-align: center;
+      font-size: 16px;
+      margin-top: 24px;
+      opacity: 0.9;
+    }
+    .rate-info {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 14px;
+      opacity: 0.85;
+    }
+    .payout-section {
+      margin-top: 25px;
+      text-align: center;
+    }
+    .payout-section select {
+      width: 80%;
+      background-color: rgba(255,255,255,0.2);
+    }
+    .send-btn {
+      margin-top: 28px;
+      background-color: #fff;
+      color: var(--secondary);
+      font-weight: 700;
+      font-size: 16px;
+      border: none;
+      border-radius: 12px;
+      width: 100%;
+      padding: 12px 0;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: all 0.2s ease-in-out;
+    }
+    .send-btn:hover {
+      background-color: var(--neutral);
+      transform: scale(1.02);
+    }
+    @media (min-width: 600px) {
+      .card { max-width: 520px; padding: 34px; }
+      input { font-size: 20px; }
+      .label { font-size: 16px; }
+      select { font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">💱 Quick Converter</div>
+
+    <div class="row">
+      <div class="label">You send</div>
+      <div class="value">
+        <input id="sendAmount" type="number" value="0" step="0.01">
+        <select id="baseCurrency"></select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="label">They receive</div>
+      <div class="value">
+        <input id="receiveAmount" type="number" value="0" step="0.01">
+        <select id="targetCurrency"></select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="label">Fees (Included)</div>
+      <div class="value" id="fees">–</div>
+    </div>
+
+    <div class="row">
+      <div class="label">Exchange Rate</div>
+      <div class="value" id="exchangeRate">–</div>
+    </div>
+
+    <div class="row bold">
+      <div class="label">Amount to pay</div>
+      <div class="value" id="totalAmount">–</div>
+    </div>
+    
+  <!-- Description Field -->
+    <!--
+  <div style="margin:14px 0;">
+    <input id="descriptionInput" 
+           type="text" 
+           placeholder="Enter description..." 
+           style="width:100%;max-width:500px;padding:10px;border:1px solid #ccc;border-radius:8px;font-size:14px;">
+  </div>    -->
+
+    <div style="margin:14px 0; text-align:left;">
+      <label for="descriptionInput" style="display:block; font-weight:600; color:white; margin-bottom:6px;">
+        Description
+      </label>
+      <input id="descriptionInput" 
+             type="text" 
+             placeholder="Enter description..." 
+             style="width:100%;max-width:500px;padding:10px;border:1px solid #ccc;border-radius:8px;font-size:14px;text-align:left;">
+    </div>
+    
+
+    <div class="recipient">
+      Recipient: <strong id="toUserName">–</strong>
+    </div>
+
+    <div class="payout-section">
+      <label for="payoutOption">Payout option:</label><br>
+      <select id="payoutOption">
+        <option value="pv_banktransfer">Bank transfer</option>
+        <option value="pv_mobilemoney">Mobile money</option>
+        <option value="pv_cashpickup">Cash pickup</option>
+      </select>
+    </div>
+
+    <button class="send-btn" id="sendBtn">Return to FlexyApp</button>
+
+    <div class="rate-info" id="rateFooter"></div>
+  </div>
+
+  <script>
+    // === Read URL params ===
+    const p = new URLSearchParams(window.location.search);
+    const feePercent = parseFloat(p.get('fee') || '0');
+    const toUserName = p.get('toUserName') || 'Recipient';
+    const fromUserId = p.get('fromUserId') || '';
+    const toUserId = p.get('toUserId') || '';
+    const rates = JSON.parse(decodeURIComponent(p.get('rates') || '{}'));
+
+    // === Elements ===
+    const sendInput = document.getElementById('sendAmount');
+    const receiveInput = document.getElementById('receiveAmount');
+    const baseSel = document.getElementById('baseCurrency');
+    const targetSel = document.getElementById('targetCurrency');
+    const feesEl = document.getElementById('fees');
+    const rateEl = document.getElementById('exchangeRate');
+    const totalEl = document.getElementById('totalAmount');
+    const toUserEl = document.getElementById('toUserName');
+    const rateFooter = document.getElementById('rateFooter');
+    const sendBtn = document.getElementById('sendBtn');
+    const payoutSel = document.getElementById('payoutOption');
+    const descEl = document.getElementById('descriptionInput');
+
+    toUserEl.textContent = toUserName;
+
+    // === Fill selects ===
+    const currencies = Object.keys(rates);
+    currencies.forEach(c => {
+      const o1 = document.createElement('option');
+      const o2 = document.createElement('option');
+      o1.value = o2.value = c;
+      o1.textContent = o2.textContent = c;
+      baseSel.appendChild(o1);
+      targetSel.appendChild(o2);
+    });
+    baseSel.value = currencies[0];
+    targetSel.value = currencies[1] || currencies[0];
+
+    const getRate = (base, target) => {
+      if (!rates[base]) return 1;
+      return parseFloat(rates[base][target] || 1);
+    };
+    const fmt = (n, c) => `${n.toFixed(2)} ${c}`;
+
+    function updateFromSend() {
+      const base = baseSel.value, target = targetSel.value;
+      const rate = getRate(base, target);
+      const amount = parseFloat(sendInput.value || 0);
+      const feeValue = amount * (feePercent / 100);
+      const total = amount + feeValue;
+      const received = amount * rate;
+      receiveInput.value = received.toFixed(2);
+      rateEl.textContent = `1 ${base} = ${rate.toFixed(4)} ${target}`;
+      feesEl.textContent = fmt(feeValue, base) + ` (${feePercent.toFixed(2)}%)`;
+      totalEl.textContent = fmt(total, base);
+      rateFooter.textContent = `Base: ${base} • Target: ${target}`;
+    }
+
+    function updateFromReceive() {
+      const base = baseSel.value, target = targetSel.value;
+      const rate = getRate(base, target);
+      const received = parseFloat(receiveInput.value || 0);
+      const send = received / rate;
+      const feeValue = send * (feePercent / 100);
+      const total = send + feeValue;
+      sendInput.value = send.toFixed(2);
+      rateEl.textContent = `1 ${base} = ${rate.toFixed(4)} ${target}`;
+      feesEl.textContent = fmt(feeValue, base) + ` (${feePercent.toFixed(2)}%)`;
+      totalEl.textContent = fmt(total, base);
+      rateFooter.textContent = `Base: ${base} • Target: ${target}`;
+    }
+
+    sendInput.addEventListener('input', updateFromSend);
+    receiveInput.addEventListener('input', updateFromReceive);
+    baseSel.addEventListener('change', updateFromSend);
+    targetSel.addEventListener('change', updateFromSend);
+    updateFromSend();
+
+
+
+<!-- === CONFIRMATION MODAL === -->
+<div id="confirmModal" 
+     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+            background:rgba(0,0,0,0.5); backdrop-filter:blur(3px);
+            display:flex; justify-content:center; align-items:center; z-index:9999;">
+  <div style="background:white; padding:22px; border-radius:14px; width:80%; max-width:320px;
+              text-align:center; font-family:Inter, sans-serif; color:#333;">
+    
+    <h3 style="margin-top:0; font-size:18px;">Confirm payment?</h3>
+    
+    <p id="confirmText" style="font-size:15px; opacity:0.9; margin: 10px 0 18px;"></p>
+
+    <button id="confirmYes"
+            style="background:#e82d7a; color:white; border:none; padding:10px 18px;
+                   border-radius:10px; font-size:15px; margin-right:10px; cursor:pointer;">
+      Yes, confirm
+    </button>
+
+    <button id="confirmNo"
+            style="background:#aaa; color:white; border:none; padding:10px 18px;
+                   border-radius:10px; font-size:15px; cursor:pointer;">
+      Cancel
+    </button>
+  </div>
+</div>    
+
+    // === Send button ===
+    /*
+    sendBtn.addEventListener('click', () => {
+      const base = baseSel.value;
+      const target = targetSel.value;
+      const amount = parseFloat(sendInput.value || 0);
+      const received = parseFloat(receiveInput.value || 0);
+      const rate = getRate(base, target);
+      const feeValue = amount * (feePercent / 100);
+      const total = amount + feeValue;
+      const payoutOption = payoutSel.value;*/
+
+// === CONFIRMATION HANDLING ===
+document.getElementById('confirmYes').addEventListener('click', () => {
+  
+  // Executa exatamente o que já existia
+  const base = baseSel.value;
+  const target = targetSel.value;
+  const amount = parseFloat(sendInput.value || 0);
+  const received = parseFloat(receiveInput.value || 0);
+  const rate = getRate(base, target);
+  const feeValue = amount * (feePercent / 100);
+  const total = amount + feeValue;
+  const payoutOption = payoutSel.value;
+
+  const params = new URLSearchParams({
+    id: '-8469591684630307411',
+    scope: 'INTERNAL',
+    fromCurrency: base,
+    transferAmount: amount.toFixed(2),
+    recipientUser: toUserId,
+    toCurrencyCode: target,
+    convertedMoney: received.toFixed(2),
+    fees: `${feeValue.toFixed(2)} ${base}`,
+    rate: `1 ${base} = ${rate.toFixed(4)} ${target}`,
+    payoutOption: payoutOption,
+    totalSent: total.toFixed(2),
+    description: descEl && descEl.value ? descEl.value.trim() : '',
+    rateValue: `${rate.toFixed(4)} ${target}`
+  });
+
+  const url = `cyclos://runOperation?${params.toString()}`;
+  window.location.href = url;
+
+  setTimeout(() => window.close(), 1000);
+});
+
+document.getElementById('confirmNo').addEventListener('click', () => {
+  document.getElementById('confirmModal').style.display = "none";
+});
+
+
+
+  </script>
+
+
+
+
+</body>
+</html>
